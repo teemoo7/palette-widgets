@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>DocReuse Widget</title>
+    <link rel="stylesheet" type="text/css" href="DocReuseWidget.css" />
+	<script type="text/javascript" src="javascript/jquery/jquery.js"></script>
+    <script type="text/javascript" src="javascript/docReuseWidget.js"></script>
+	<script type="text/javascript">
+	    function onLoad() {
+			docReuseWidget.initialize();
+		}
+	</script>
+  </head>
+
+  <body id="body">
+	<div id="main">To open the DocReuse Portal, click on the button below:
+		<div id="portal" align="center" class="clickable" onClick="docReuseWidget.openDocReuse();">
+			<img src="images/logo_reuse_final.png" alt="DocReuse portal"/>
+		</div>	
+	</div>
+	<div id="dnd">Drag and drop an XTiger Template in this widget to import it.
+		<div id="basket">
+			<div id="template" style="display: none">
+				<table align="center" cellpadding="3" cellspacing="3">
+					<tbody>
+						<tr>
+							<td><img src="images/xtd_24.png" alt="XTiger Template"/></td>
+							<td id="template_name">Template name</td>
+							<td><img src="images/69_16.png" alt="Remove" title="Remove" class="clickable" onClick="docReuseWidget.removeTemplate();"/><td>
+							<td><input type="button" name="import_button" id="import_button" value="Import" onClick="docReuseWidget.importTemplate();"/></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div id="applications">
+			<table align="center">
+				<tbody>
+					<tr>
+						<td><img src="images/extraction_100.png" alt="eXtraction"/></td>
+						<!--
+						<td><img src="images/structuring_100.png" alt="Structuring"/></td>
+						<td><img src="images/evolution_100.png" alt="Evolution"/></td>
+						-->
+					</tr>
+				</tbody>
+			</table>
+		</div>	
+	</div>
+	<div id="indicator" style="display: none;">
+		<img src="images/indicator.gif"/> 	
+	</div>
+  </body>
+</html>

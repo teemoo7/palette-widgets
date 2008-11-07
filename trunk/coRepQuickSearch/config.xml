@@ -1,0 +1,17 @@
+<widget xmlns="http://www.w3.org/TR/widgets/" xmlns:palette="http://palette.ercim.org/ns/"
+	width="300"
+	height="150"
+	id="coRepQuickSearch">
+	<title>Common Repository Quick Search</title>
+	<author url="http://docreuse.epfl.ch" email="micael.paquier@epfl.ch">Micael Paquier</author>
+	<description>Quick search of files stored on the Common Repository</description>
+	<icon src="images/70.png"/>
+	<palette:widget_type>local</palette:widget_type>
+	<palette:preferences>
+		<palette:preference name="repository" display_name="Repository" datatype="enumeration" default_value="CoRep">
+			<palette:enumeration value="CoRep" display_value="Common Repository (PALETTE)"/>
+			<palette:enumeration value="other" display_value="Other server"/>
+		</palette:preference>
+		<palette:preference name="repositoryurl"	display_name="URL of other server"	datatype="string" default_value="http://wam.inrialpes.fr/software/amaya/templates/index.en.html"/>
+	</palette:preferences>
+</widget>

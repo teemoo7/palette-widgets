@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- 	
+
+XTiger Widget : Template Viewer
+
+Contributors:
+- Jonathan Wafellman (EPFL)
+- Stephane Sire (EPFL)
+
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:xt="http://wam.inrialpes.fr/xtiger" xml:lang="en">
+<head>
+	<title>XTiger Widget Viewer</title>
+	
+	<!-- Begin Local Version Block -->
+	<!-- <link rel="stylesheet" type="text/css" href="http://www.palette.tudor.lu/widget/css/palette.css" /> 
+	<script type="text/javascript" src="http://www.palette.tudor.lu/widget/js/palette.js"></script> -->
+	<!-- End of Local Version Block -->
+	
+	<link rel="stylesheet" href="viewer.css" type="text/css"></link>
+	<script type="text/javascript" src="xtigertrans.js"></script>
+	<script type="text/javascript">
+	
+	var TRANSFOS_URL_KEY = 'transfosURL'; // preference key
+			
+	function log(msg) {
+		window.console.log ('TPLV >> ' + msg);
+	}  
+	
+	function error(msg) {
+		alert('TPLV >> ' + msg);
+	}	
+	
+	// Returns the path to the folder that contains the transformation definitions
+	// Returned path ends with '/'
+	function getTransformationPath () {
+		var baseURL = widget.preferenceForKey(TRANSFOS_URL_KEY);		
+		// 1. sets the value of baseURL, takes default value if not defined
+		if (baseURL && (baseURL.length > 0)) {			
+			// 1.1 adds trailing '/' if missing
+			if (baseURL.charAt(baseURL.length - 1) != '/') {
+				baseURL += '/';
+			}
+		} else {
+			baseURL = 'transfos/';
+		}
+		return baseURL;
+	}
+                    
+	// Returns the value of the first selected option from the select list
+	// Returns null if no one is selected
+	function getValueFromSelect (sel) {
+		for (var i = 0; i < sel.options.length; i++) {
+	     	if (sel.options[i].selected) {
+					return sel.options[i].value;
+		    }
+		}
+		return null;
+	}
+
+	// data must contains the text of the template file which has been loaded
+	// Parses the template file into a document and then transforms it with 
+	// the transformation which has been loaded in viewWin
+	function onGotTemplateFile (data, viewWin, templateURL) {
+		var templateDoc;  
+		var transfoDoc = viewWin.document;		
+
+		// 1. parses the template file
+		if (data.documentElement) { // already parsed by Ajax as an XML document			
+			templateDoc = data.documentElement;
+		} else {
+			try {
+			    var parser = new DOMParser();
+			    templateDoc = parser.parseFromString(data, "text/xml");
+		  } catch (e) {                                                                
+				  viewWin.document.write ('Cannot parse the template file ' + templateURL + ' because ' + e);
+					return;
+		  }
+		}
+
+ 		// 2. creates and inits the XTiger renderer object for this transformation
+		var renderer = new xtigerTrans ();                              
+		log('Tranforming ' + templateDoc + ' with ' + transfoDoc);
+		renderer.initTransformerFromDocument (templateDoc, transfoDoc);
+
+		// 3. cleans up the window body content to receive the transformed template
+		var body = transfoDoc.getElementsByTagName('body')[0];
+		var cur;
+		while (cur = body.firstChild) {
+			// peut-être préserver certains noeud (class="preserve") et insérer le doc dans un placeholder ?
+			if ((cur.nodeType == Node.ELEMENT_NODE) || (cur.nodeType == Node.TEXT_NODE)) {
+				body.removeChild(cur);
+			}
+		}				
+			
+    // 4. transforms
+		var currentNode = templateDoc.getElementsByTagName('body')[0];
+		var parentNode = currentNode.cloneNode(true);
+		body.appendChild(parentNode);
+		// TBD: include child by child to avoid double body inclusion
+		if (transfoDoc.xTigerTransformationCallback) {
+			renderer.xtigerToHTML(parentNode, transfoDoc.xTigerTransformationCallback);
+		} else {
+			renderer.xtigerToHTML(parentNode);
+		}
+		// Give control to transformation post-generation callback if any
+		if (transfoDoc.xTigerPostGenerationCallBack) {
+			transfoDoc.xTigerPostGenerationCallBack(parentNode, transfoDoc);
+		}  
+		          
+		// 5. Set window title
+		try {
+			var title = transfoDoc.getElementsByTagName('head')[0].getElementsByTagName('title')[0].firstChild;
+			title.replaceData('Preview of ' + templateURL.match(/([^\/]+?\.xtd)$/)[1]);
+			// does not seem to work in Firefox
+	  } catch (e) {
+			// nop
+		}
+	}
+	                
+ 	// Handler called when the popup window containing the selected transformation has been loaded
+	function onTransfoLoad (viewWin, templateURL) {  
+		// Now tries to load the template file     
+		log ('popup window loaded now loads template ' + templateURL);
+		widget.httpGet(templateURL, { }, function (data) { onGotTemplateFile (data, viewWin, templateURL) });
+	}
+	
+	// The user has just dropped a template file on the widget
+	function onDrop (event, isTemplateFile) {
+		var fileURL = event.eventData;
+		if (isTemplateFile || (fileURL.match(/xtd$/,'i'))) {
+			var tsel = document.getElementById ('transfosList');
+			var transfo = getValueFromSelect(tsel);
+			if (transfo && (transfo == 'none')) {
+				var popup = window.open(fileURL, 'Template Viewer', 'toolbar=no,menubar=no,resizable=yes,scrollbars=yes', false);  				
+			} else if (transfo) {    								          
+				// the popup location.href must be set to a full URL (not a relative one)
+				// thus we forge one based on the current location.href   
+				var m = document.location.href.match(/(.*\/)index\.html/);
+				var baseLoc = m ? m[1] : '';
+				var transfoURL = baseLoc + getTransformationPath () + transfo + 'index.xhtml';
+				log('loading popup window with ' + transfoURL);
+				// loads the transformation into a new popup window and waits for the transformation to be loaded
+				var popup = window.open('', 'Template Viewer', 'toolbar=no,menubar=no,resizable=yes,scrollbars=yes', false);  
+				if( popup.addEventListener ) {
+					log('add event listener ' + transfoURL);
+				  popup.addEventListener('load',function () { onTransfoLoad(popup, fileURL)},false);
+				} else if( popup.document.addEventListener ) {
+				  popup.document.addEventListener('load',function () { onTransfoLoad(popup, fileURL)},false);
+				}
+				popup.location.href = transfoURL;
+			} else {
+				error('no transformation defined, set the transformation folder in the Preferences !');
+			}			
+		} else {
+			error(fileURL + ' is not an XTiger template document !');
+		}		
+	}	                               
+	
+	// Spots file names in <a href="(url)">(file name)</a> sub-expressions inside data
+	// Keeps only file names that match filter if defined
+	// Returns an array of the file name results
+	function extractFilesFromIndex (data, filter) {
+		var rext = new RegExp('href\s?=[\'\"](.+?)[\'\"]>(.+?)\<\/a\>', 'mgi'); // +? for greedy matching
+		var m;
+		var files = [];
+		while (null != (m = rext.exec(data))) {
+			if ((! filter) || filter(m[2])) {
+				files.push(m[2]);
+			}
+		}
+		return files;
+	}
+               
+	// Ajax Handler called when content of the transformations folder has been received
+	function onGotTransfosIndex (data) {
+		if (data.match(/html/,'i')) {
+			var folders = extractFilesFromIndex (data, function (s) { return (s.charAt(s.length - 1) == '/') });
+			if (folders.length > 0) {
+				// Adds the transformation names to the options in the select 'transfosList' element
+				var c = document.getElementById('transfosList');
+				// The <select> should have just a NONE option by default
+				for (var i = 0; i < folders.length; i++) {
+					var item = document.createElement('option');  
+					// removes trailing slash in folder name
+					var content = document.createTextNode(folders[i].substr(0, folders[i].length - 1));
+					item.value = folders[i];
+					item.appendChild (content);
+					c.appendChild(item);
+				}				
+			} else {
+				error("the transformation directory does not define transformations, try to change it in preferences !");
+			}
+		} else {
+			error("cannot read the transformation directory, try to change it in the preferences !");
+		}
+
+	}     
+	
+	// Reads the transformation folder content
+	// Continue with onGetTransfosIndex when the folder index is loaded
+	function initTransformMenu () {
+		var baseURL = getTransformationPath();
+		log ('loading content of ' + baseURL);
+		widget.httpGet(baseURL, { }, onGotTransfosIndex);				
+	}	
+	
+	function onLoad () {
+		initTransformMenu ();		
+		// registers drop event handlers
+		widget.addWidgetEventListener('http://palette.ercim.org/ns/dnd/file', onDrop, null);  
+		// the second argument of the event handler is set to true to indicate this is an XTiger template
+		widget.addWidgetEventListener('http://palette.ercim.org/ns/dnd/file/xtiger-template', function (ev) { onDrop(ev, true) }, null);		
+		if (widget.bindWidgetToDropType) {
+			widget.bindWidgetToDropType ('http://palette.ercim.org/ns/dnd/file');
+			widget.bindWidgetToDropType ('http://palette.ercim.org/ns/dnd/file/xtiger-template');
+		}
+	}
+	</script>
+</head>
+<body>
+	<div id="formular">
+	    <form id="formUrl" action="javascript:alert('Oops, something went wrong !')" onsubmit="return false;">
+	        <p id="hint" class="formEntry">Drop an XTiger template file on this Widget to open its preview in a new window.</p>
+					<p>
+		        <label for="">Preview style :</label>
+						<br/>
+						<select class="formEntry" id='transfosList'><option value="none">none</option></select>
+					</p>
+	    </form>
+	</div>
+</body>
+</html>

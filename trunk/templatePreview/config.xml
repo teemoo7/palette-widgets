@@ -1,0 +1,13 @@
+<widget xmlns="http://www.w3.org/TR/widgets/" 
+		xmlns:palette="http://palette.ercim.org/ns/"
+  	width="500"
+  	height="150"
+  	id="templatePreview">
+  <title>XTiger Template Preview</title> 
+  <author url="http://www.epfl.ch" email="stephane.sire@epfl.ch">Stephane Sire</author> 
+  <description>Shows XTiger template previews in an external window</description> 
+  <palette:widget_type>local</palette:widget_type>
+  <palette:preferences>
+		<palette:preference name="transfosURL" display_name="Preview container address" datatype="string" default_value="transfos"/> 
+  </palette:preferences> 
+</widget>
