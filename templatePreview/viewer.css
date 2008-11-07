@@ -1,0 +1,30 @@
+/* xTigerTrans widget : viewer.css */
+
+#formular {
+    margin: 0;
+    padding: 0;
+		margin-left: 10px;
+		margin-right: 10px;
+		text-align: center;		
+}    
+
+.formEntry {
+	margin: 8px 0;		
+}
+
+#url {
+	width: 100%;	
+}
+
+#visuButton {
+	margin-right: 10px;
+}
+
+#msg {
+	color: gray;
+}
+
+#hint {
+	color: gray;
+	margin: 15px 20px;
+}

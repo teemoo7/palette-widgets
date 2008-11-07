@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Weather Forecast BBC</title>
+    <link rel="stylesheet" type="text/css" href="weather.css" />
+	<script type="text/javascript" src="javascript/jquery/jquery.js"></script>
+    <script type="text/javascript" src="javascript/weather.js"></script>
+	<script type="text/javascript">
+	    function onLoad() {
+			weather.initialize();
+		}
+	</script>
+  </head>
+
+  <body id="body">
+	<div id="weather">
+		<div id="location"></div>
+		<table align="center">
+			<tbody>
+				<tr>
+					<td id="day0_main"></td>
+					<td id="day1_main"></td>
+					<td id="day2_main"></td>
+				</tr>
+				<tr>
+					<td class="small" align="center" id="day0_info"></td>
+					<td class="small" align="center" id="day1_info"></td>
+					<td class="small" align="center" id="day2_info"></td>
+				</tr>					
+				<tr>
+					<td class="small" align="center" id="day0_max_temp"></td>
+					<td class="small" align="center" id="day1_max_temp"></td>
+					<td class="small" align="center" id="day2_max_temp"></td>
+				</tr>					
+				<tr>
+					<td class="small" align="center" id="day0_min_temp"></td>
+					<td class="small" align="center" id="day1_min_temp"></td>
+					<td class="small" align="center" id="day2_min_temp"></td>
+				</tr>					
+			</tbody>
+		</table>
+	</div>	
+	<div id="indicator" style="display: none;">
+		<img src="images/indicator.gif"/> 	
+	</div>
+  </body>
+</html>

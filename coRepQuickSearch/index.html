@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Common Repository Quick Search</title>
+    <link rel="stylesheet" type="text/css" href="CoRepQS.css" />
+	<script type="text/javascript" src="javascript/jquery/jquery.js"></script>
+    <!--
+	<script type="text/javascript" src="javascript/jquery/dimensions/jquery.dimensions.js"></script>
+	<script type="text/javascript" src="javascript/jquery/gradient/jquery.gradient.js"></script>
+	-->
+    <script type="text/javascript" src="javascript/searchEngine.js"></script>
+	<script type="text/javascript">
+	    function onLoad() {
+			searchEngine.initialize();
+			//$('#searchBar').gradient({ from: '99CCFF', to: '6699CC', direction: 'horizontal' });			
+		}
+	</script>
+  </head>
+
+  <body id="body">
+	<div id="searchBar">
+		<table align="center">
+			<tbody>
+				<tr>
+					<td width="20">
+						<img src="images/70.png"/> 
+					</td>
+					<td class="bold" width="55">
+						Search 
+					</td>
+					<td>
+						<input type="text" id="filename" name="filename"/>
+						<!--<input type="text" id="filename" name="filename" onFocus="writing = true; this.select();" onBlur="writing=false;" onKeyUp="if (writing) queryServer()"/>-->
+					</td>
+				</tr>
+				<tr>
+					<td class="small" colspan="3" align="center">
+						<input type="checkbox" id="startingBy" name="startingBy" onClick="searchEngine.queryServer(true);"/> <span class="clickable" onClick="$('#startingBy').get(0).checked = !($('#startingBy').get(0).checked); searchEngine.queryServer(true);">Starting with</span>
+						&nbsp; &nbsp; &nbsp;
+						<input type="checkbox" id="templatesOnly" name="templatesOnly" onClick="searchEngine.queryServer(true);"/>  <span class="clickable" onClick="$('#templatesOnly').get(0).checked = !($('#templatesOnly').get(0).checked); searchEngine.queryServer(true);">Templates</span>
+					</td>
+				</tr>					
+			</tbody>
+		</table>
+	</div>	
+  	<div id="resultsList" style="display: none;">
+		<ul id="results"/>
+	</div>
+	<div id="noResultFound" style="display: none;">
+		No result found for keyword <b><span id="noResultKeyword">?</span></b>
+	</div>
+	<div id="indicator" style="display: none;">
+		<img src="images/indicator.gif"/> 	
+	</div>
+  </body>
+</html>

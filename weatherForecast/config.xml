@@ -1,0 +1,17 @@
+<widget xmlns="http://www.w3.org/TR/widgets/" xmlns:palette="http://palette.ercim.org/ns/"
+	width="300"
+	height="160"
+	id="weatherForecast">
+	<title>Weather Forecast</title>
+	<author url="http://docreuse.epfl.ch" email="micael.paquier@epfl.ch">Micael Paquier</author>
+	<description>Worl Weather 3-days Forecast from BBC (see http://www.bbc.co.uk/weather/)</description>
+	<icon src="images/20.png"/>
+	<palette:widget_type>local</palette:widget_type>
+	<palette:preferences>
+		<palette:preference name="location"	display_name="Location"	datatype="string" default_value="Lausanne"/>
+		<palette:preference name="language"	display_name="Language"	datatype="enumeration" default_value="en">
+			<palette:enumeration value="en" display_value="English"/>
+			<palette:enumeration value="fr" display_value="French"/>
+		</palette:preference>
+	</palette:preferences>
+</widget>

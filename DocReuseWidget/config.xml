@@ -1,0 +1,12 @@
+<widget xmlns="http://www.w3.org/TR/widgets/" xmlns:palette="http://palette.ercim.org/ns/"
+	width="300"
+	height="200"
+	id="DocReuseWidget">
+	<title>DocReuse Widget</title>
+	<author url="http://docreuse.epfl.ch" email="micael.paquier@epfl.ch">Micael Paquier</author>
+	<description>Widget allowing users to import XTiger templates and instances in order to use them in DocReuse applications.</description>
+	<icon src="images/recycle_16.png"/>
+	<palette:widget_type>local</palette:widget_type>
+	<palette:preferences>
+	</palette:preferences>
+</widget>
