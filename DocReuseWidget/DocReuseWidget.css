@@ -38,11 +38,15 @@ body {
 }
 
 #indicator {
-	margin: auto;
+	/*margin: auto;*/
 	width: 20px;
 	height: 20px;
 	text-align:center;
 	margin-top: 40px;
+	position: absolute;
+	right: 33px;
+	bottom: 15px;
+	z-index: 1000;
 }
 
 #noResultFound {

@@ -1,6 +1,6 @@
 <widget xmlns="http://www.w3.org/TR/widgets/" xmlns:palette="http://palette.ercim.org/ns/"
 	width="300"
-	height="200"
+	height="150"
 	id="DocReuseWidget">
 	<title>DocReuse Widget</title>
 	<author url="http://docreuse.epfl.ch" email="micael.paquier@epfl.ch">Micael Paquier</author>
@@ -8,5 +8,7 @@
 	<icon src="images/recycle_16.png"/>
 	<palette:widget_type>local</palette:widget_type>
 	<palette:preferences>
+		<palette:preference name="docreuselocation"	display_name="Location of the DocReuse portal"	datatype="string" default_value="http://docreuse.epfl.ch:8050"/>	
+		<palette:preference name="extractionlocation"	display_name="Location of the DocReuse eXtraction module"	datatype="string" default_value="http://docreuse.epfl.ch:8090/extracts/"/>	
 	</palette:preferences>
 </widget>
