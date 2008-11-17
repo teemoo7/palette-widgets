@@ -128,7 +128,17 @@ Contributors:
 	
 	// The user has just dropped a template file on the widget
 	function onDrop (event, isTemplateFile) {
-		var fileURL = event.eventData;
+		var data = event.eventData;
+		var fileURL;
+		// In function of the received data type, define fileURL
+		if (typeof data == 'string') {
+			fileURL = data;
+		} else if ((typeof data == 'object') && (data['link'])) {
+			fileURL = data['link'];
+		} else {
+			error("the data type sent from the source widget is not recognized.");
+		}
+		
 		if (isTemplateFile || (fileURL.match(/xtd$/,'i'))) {
 			var tsel = document.getElementById ('transfosList');
 			var transfo = getValueFromSelect(tsel);
