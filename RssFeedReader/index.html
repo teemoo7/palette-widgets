@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+ This file is part of "CroSSe Widget".
+ Copyright (c) 2007-2008 CRP Henri Tudor and contributors (Jérôme Bogaerts).
+ All rights reserved.
+
+ "myWiWall" is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as published by
+ the Free Software Foundation.
+ 
+ "myWiWall" is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with "myWiWall"; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+<html>
+	<head>
+		<title>XHR RSS</title>
+		
+		<style type="text/css" media="screen">@import url(rss.css);</style>
+		
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript" src="RFC822DateParser.js"></script>
+		<script type="text/javascript">
+			// Main configuration.
+			// TODO : Create a context object for window widget.
+			window.feedUrl = '';
+			window.nbItems = '';
+			window.currentPage = 0; // Index of the current page in order to manage pagination.
+			window.feed = null;
+			window.totalItems = null;
+			window.rssVersion = null;
+		
+			function onLoad() 
+			{
+				// Register for events from the HotFeeds widget.
+				widget.addWidgetEventListener('http://www.tudor.lu/widget/event/showFeed',
+											  function(data){loadFeed(data.eventData.feedURI);},
+											  'hotFeeds');
+			
+				window.feedUrl = widget.preferenceForKey('feed_url');
+				window.nbItems = parseInt(widget.preferenceForKey('items_quantity'));	// Quantity of items to display by screen view.
+				
+				$('#loading').fadeIn('fast', function(){
+					loadFeed();
+				});
+			}
+			
+			function getElementsByTagName(tagName, ns, prefix, scope)
+			{
+				var elementListForReturn = scope.getElementsByTagName(prefix+':'+tagName);
+				if(elementListForReturn.length == 0){
+					elementListForReturn = scope.getElementsByTagName(tagName);
+					if(elementListForReturn.length == 0){
+						elementListForReturn = scope.getElementsByTagName('ns:'+tagName);
+						if(elementListForReturn.length == 0 && document.getElementsByTagNameNS){
+							elementListForReturn = scope.getElementsByTagNameNS(ns, tagName);
+						}
+					}
+				}     
+		 
+				return elementListForReturn;
+		    }
+			
+			function determineFeedVersion(xmlFeed)
+			{
+				// TODO Refine version detection
+				var foundVersion = '2.0';
+				// If an RDF node is found as the root node, we assume it is a 1.0 feed.
+				var rootRDFNode = getElementsByTagName('RDF', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf', xmlFeed);
+				
+				if (rootRDFNode.length == 1)
+					foundVersion = '1.0';
+				else
+					foundVersion = '2.0';
+					
+				window.rssVersion = foundVersion;
+			}
+			
+			function updateTitle()
+			{
+				
+			
+				var readCount = 0;
+				var unreadCount = 0;
+			
+				$('#feed_entries > li > a').each(function (i) {
+																					// IE Workaround.
+					if ($(this).css('color') == 'rgb(170, 170, 170)' || $(this).css('color') == '#aaa')
+						readCount++;
+					
+				});
+				
+				unreadCount = $('#feed_entries > li > a').length - readCount;
+				
+				widget.setTitle('RSS Feed Reader ' + '(' + unreadCount + ' unread)');
+			}
+			
+			function loadFeed(feedFromEvent)
+			{	
+				if (!feedFromEvent)
+					feedFromEvent = window.feedUrl;
+			
+				// I did that because I need to know the total numbers of items before executing anything. It's a pagination
+				// related issue.
+				widget.httpGet(feedFromEvent, 
+							   null, 
+							   function(data){
+							   		// Ok it's loaded we can pull out the loading screen
+							   		// and insert the needed elements.
+							   		$('#loading').remove();
+							   		
+							   		$('body').addClass('screen');
+							   		
+							   		// We display the title of the feed if specified in
+							   		// the xml configuration manifest.
+							   		if (widget.preferenceForKey('display_title') == 'true')
+							   			$('body').append('<h1 id="feed_title"></h1>');		
+							   							   		
+							   		$('body').append('<ul id="feed_entries"></ul>');
+							   		$('body').append('<div id="navbar"></div>');
+							   		
+									if (typeof data != 'object')
+									{
+								   		if (window.ActiveXObject)
+								   		// Code for IE, the real, the bad, the holly crap ...
+									    {
+									    	var doc = new ActiveXObject('Microsoft.XMLDOM');
+									    	doc.async = 'false';
+									    	doc.loadXML(data);
+									    }
+									    // code for Mozilla, Firefox, Opera, and cie ...
+									    else
+									    {
+									    	var parser = new DOMParser();
+									    	var doc = parser.parseFromString(data,"text/xml");
+									    }
+								   		
+								   		window.feed = doc.documentElement;
+							   		}
+							   		else
+							   		{
+							   			window.feed = data;
+							   		}
+							   		
+							   		if (!$(window.feed).find('channel').length)
+							   			displayError();
+							   		
+							   		determineFeedVersion(window.feed);
+							   		loadItems(false);
+							   		
+							   },
+							   displayError)
+			}
+			
+			function displayError(xhr, status, thrownError)
+			{
+				var errorContainer = $("<div id=\"error\">Unable to load the requested RSS feed.</div>");
+				$('body').empty();
+				$('body').removeClass('screen');
+				$('body').append(errorContainer);
+			}
+		
+			function loadItems(kill)
+			{
+				var itemsSearch = (window.rssVersion == '1.0') ? 'item' : 'channel > item';
+			
+				var outSpeed = 'slow';
+				if (!kill)
+					outSpeed = 100;
+		
+				$('#feed_entries').fadeOut(outSpeed, function(){
+					
+					$('#feed_entries > li').remove();
+					
+					var title = $(window.feed).find('channel > title').get(0);
+
+					titleText = title.firstChild.nodeValue;
+					titleText = titleText.replace('<![CDATA[', '');
+					titleText = titleText.replace(']]>', '');
+					
+					// We display the title of the feed if specified in
+					// the xml configuration manifest.
+					if (widget.preferenceForKey('display_title') == 'true')
+						$('#feed_title').text(titleText);
+					
+					// -- Items title retrieval.
+					// To support 1.0 feeds, simply change channel > item into item
+					var itemTitles = $(window.feed).find(itemsSearch).slice(window.currentPage * window.nbItems, (window.currentPage * window.nbItems) + window.nbItems);
+					
+					itemTitles.each(function(index){
+					
+						var li = document.createElement('li');
+						var a = document.createElement('a');
+						
+						// Link retrieval.
+						var link = this.getElementsByTagName('link')[0];
+						
+						linkValue = link.firstChild.nodeValue;
+						linkValue = linkValue.replace('<![CDATA[', '');
+						linkValue = linkValue.replace(']]>', '');
+						
+						//--  Link creation.
+						// Developper's note : the target attribute is forbidden with XHTML strict. So we use the onclick
+						// attribute to set the target using the window.open function.
+						title = $(this).find('title').get(0);
+						
+						titleText = title.firstChild.nodeValue;
+						titleText = titleText.replace('<![CDATA[', '');
+						titleText = titleText.replace(']]>', '');
+						
+						$(a).append(titleText);
+						$(a).attr('href', linkValue);
+						$(a).attr('target', '_blank');
+						$(a).click(function() {
+							setTimeout(updateTitle, 10000);
+						});
+						
+						// List item creation.
+						$(li).append(a);
+						
+						// Publication date retrieval.
+						// RSS 2.0 : pubDate.
+						// RSS 1.0 : dc:date.
+						if (window.rssVersion == '2.0')
+						{
+							var dateElement		= $(this).find('pubDate').get(0);
+							var dateText 		= dateElement.firstChild.nodeValue;
+							
+							var dateParser	 	= new RFC822DateParser(dateText);
+							var dateInstance	= dateParser.parse(false);
+							
+							var presentationDateString = dateInstance.getDate() + '/' + (dateInstance.getMonth() + 1) + '/' + dateInstance.getFullYear();
+							var dateSpan = document.createElement('span');
+							
+							$(dateSpan).append(presentationDateString);
+							$(dateSpan).addClass('date');
+							
+							$(li).append(dateSpan);
+						}
+						
+						$('#feed_entries').append(li);
+						
+					});
+					
+					$('#feed_entries').fadeIn('normal');
+					
+					// -- Navbar management.
+					window.totalItems = $(window.feed).find(itemsSearch).length;
+					$('#navbar').contents().remove();
+					
+					// Do we have to display the 'previous' button ?
+					if ((window.nbItems * window.currentPage) > 0)
+						$('#navbar').append('<a id="previous" href="#" onclick="previousItems();"><img src="previous.png"/></a>');
+					
+					// Do we have to display the 'next' button ?
+					if ((window.nbItems * window.currentPage + window.nbItems) < window.totalItems)
+						$('#navbar').append('<a id="next" href="#" onclick="nextItems();"><img src="next.png"/></a>');
+				
+					
+					// We addjust the height of the widget, because the height of the item list is variable.
+					var container = $('.screen').get(0);
+					var style;
+					var bodyHeight = 0;
+					
+					if (window.getComputedStyle)
+					{
+						// We love Mozilla foundation.
+						style = window.getComputedStyle(container, null);
+						
+						bodyHeight = $(container).height();
+						
+						widget.setHeight(bodyHeight);
+					}
+					else
+					{
+						// We don't really like Internet Explorer ... but sheeps like it !
+						bodyHeight = $(container).height();
+						widget.setHeight(parseInt(bodyHeight));
+					}
+					
+					updateTitle();
+				});
+			}
+			
+			function nextItems()
+			{
+				window.currentPage += 1;
+				loadItems(true);
+			}
+			
+			function previousItems()
+			{
+				window.currentPage -= 1;
+				loadItems(true);
+			}
+		</script>
+	</head>
+	
+	<body>
+		<div id="loading">
+			<span>Please wait while loading</span> <img alt="Loading" title="loading" src="loading.gif"/>
+		</div>
+	</body>
+</html>
