@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+ This file is part of "CroSSe Widget".
+ Copyright (c) 2007-2008 CRP Henri Tudor and contributors (Marie-Laure Watrinet, Jérôme Bogaerts).
+ All rights reserved.
+
+ "myWiWall" is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as published by
+ the Free Software Foundation.
+ 
+ "myWiWall" is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with "myWiWall"; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+<html>
+<head>
+<title>Widget Test</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+
+function onLoad()
+{
+	changeStatus('Enter one or more keywords in the text field and press submit', null);
+	
+	// Usability, focus the search field on load.
+	$('#query').focus();
+}
+
+function onSearch()
+{
+	changeStatus('Searching the CroSSe for matching documents', 'ajax-loader-small.gif');
+
+	widget.httpGet('http://sim.tudor.lu/palette/CroSSE/webservice.php/rest?keywords=' + $('#query').attr('value'), null, function(data){
+		
+		// defensive.
+		var data = buildResponseAsXmlObject(data);
+		$('#results').remove();
+		
+		// Counting items in the response.
+		itemCount = $(data).find('item').length;
+
+		if (itemCount > 0)
+		{
+			changeStatus(itemCount + ' results', 'ok.png');
+		
+			// Result list element.
+			var listElement = $("<ul id=\"results\">")
+			
+			$(data).children().children("item").each(function(i) 
+			{
+				var link 		= $(this).children('link').text();
+				var name 		= $(this).children('title').text();
+				
+				// Format handling for drag and drop.
+				var format 		= customTagNameNS('format', 'http://purl.org/dc/elements/1.1/', 'dc', this);
+				format			= $(format).text();
+				
+				// Be carefull to encode correctly the myme type (characters such as the '+',
+				// used in URIs are particularly dangerous ;) ).
+				var fileEventTypePrefix = 'http://palette.ercim.org/ns/dnd/file/';
+				var fileEventType;
+				
+				if (format == 'application/xtd')
+					fileEventType = fileEventTypePrefix + 'xtiger-template';
+				else
+					fileEventType = fileEventTypePrefix + encodeURIComponent(format);
+				
+				var resultElement 	= $("<li/>");
+				var nameElement		= $("<span>" + name + "</span>");
+				var dndElement		= $("<a href=\"" + link + "\" target=\"_blank\"></a>");
+				
+				
+				resultElement.append(dndElement).append(nameElement);
+				listElement.append(resultElement);
+			
+				widget.addDragData(nameElement.get(0), fileEventType, link, name);
+			});
+			
+			$('#widget').append(listElement);
+		}
+		else
+		{
+			changeStatus('Your search returned no results');
+		}
+	},
+	function (xhr, status, errorThrown) {
+		changeStatus('An error occured when searching documents. Please try again.', 'error.png');
+	});
+
+	// Return false for the onsubmit event bound to the search form.
+	return false;
+}
+
+function buildResponseAsXmlObject(data)
+{
+	if (typeof data != 'object')
+	{
+   		if (window.ActiveXObject)
+   		// Code for IE, the real, the bad, the holly crap ...
+	    {
+	    	var doc = new ActiveXObject('Microsoft.XMLDOM');
+	    	doc.async = 'false';
+	    	doc.loadXML(data);
+	    }
+	    // code for Mozilla, Firefox, Opera, and cie ...
+	    else
+	    {
+	    	var parser = new DOMParser();
+	    	var doc = parser.parseFromString(data,"text/xml");
+	    }
+   		
+   		return doc.documentElement;
+	}
+	else
+	{
+		return data;
+	}
+}
+
+function customTagNameNS(tagName, ns, prefix, scope)
+{
+	var elementListForReturn = scope.getElementsByTagName(prefix + ':' + tagName);
+	
+	if (elementListForReturn.length == 0)
+	{
+		elementListForReturn = scope.getElementsByTagName(tagName);
+		
+		if (elementListForReturn.length == 0)
+		{
+			elementListForReturn = scope.getElementsByTagName('ns:' + tagName);
+			
+			if (elementListForReturn.length == 0 && document.getElementsByTagNameNS)
+			{
+				elementListForReturn = scope.getElementsByTagNameNS(ns, tagName);
+			}
+		}
+	}     
+
+	return elementListForReturn;
+}
+
+function changeStatus(text, icon)
+{
+	var statusElement = $('#status');	
+	
+	if (icon)
+	{
+		statusElement.css('text-align', 'right');
+		statusElement.css('background-image', 'url(' + icon + ')');
+	}
+	else
+	{
+		statusElement.css('background-image', 'none');
+		statusElement.css('text-align', 'left');
+	}
+	
+	
+	statusElement.text(text);
+}
+
+</script>
+</head>
+<body>
+	<form id="search" onsubmit="onSearch();" action="#">
+		<input id="query" type="text" maxlength="30"/>
+		<input id="confirm_search" type="submit" value="submit"/>
+	</form>
+	<div id="widget"></div>
+	<div id="status"></div>
+</body>
+</html>

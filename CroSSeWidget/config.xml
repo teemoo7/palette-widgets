@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!--
+ This file is part of "CroSSe Widget".
+ Copyright (c) 2007-2008 CRP Henri Tudor and contributors (Marie-Laure Watrinet, Jérôme Bogaerts).
+ All rights reserved.
+
+ "myWiWall" is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as published by
+ the Free Software Foundation.
+ 
+ "myWiWall" is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with "myWiWall"; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<widget xmlns="http://www.w3.org/TR/widgets/"
+	xmlns:palette="http://palette.ercim.org/ns/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/TR/widgets/ /var/www/widget/schema/manifest.xsd"
+	id="CroSSEWidget"
+	version="1.0"
+	height="200"
+	width="300">
+	<title>CroSSe search</title>
+	<description>CroSSE is a composite service, which aggregates individual search Web services provided by some
+    PALETTE services. It acts as a query dispatcher to these services, allowing a single access to data and information
+     handled by different PALETTE services.</description>
+	<author url="http://www.tudor.lu" email="marie-laure.watrinet@tudor.lu">Marie-Laure Watrinet</author>
+	<palette:widget_type>local</palette:widget_type>
+	<palette:alternate_url>http://sim.tudor.lu/palette/CroSSE/</palette:alternate_url>
+</widget>
