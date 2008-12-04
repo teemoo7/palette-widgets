@@ -1,0 +1,66 @@
+/* 
+
+ Sample style sheet for viewing XTiger template documents transformed with xTigerTrans
+
+*/
+body {
+	width: 80%;
+}
+
+fieldset {
+	background-color: white;
+}
+
+.component {
+	border: 1px dotted blue;
+	margin: 2px;
+	padding: 2px;
+}
+
+.xt_use {
+	padding: 2px;
+	margin: 2px;
+	background-color: #e0e0ff;
+	border:1px solid #CCCCCC;
+	cursor:pointer;
+}
+
+.optional {
+
+}
+
+.bag {
+	/*border: 1px solid green;*/	
+	margin: 2px;
+	padding: 2px;
+}
+
+.option{
+	/*border: 1px dashed cyan;%*/
+	margin: 2px;
+	padding: 2px;
+}
+
+.option_legend{
+	border: 1px dotted blue;
+	margin: 2px;
+	padding: 2px;
+}
+
+.repeat{
+	/*border: 1px dashed orange;*/
+	margin: 2px;
+	padding: 2x;
+}
+.span{
+color:red;
+}
+.string{
+color:orange;
+}
+.boolean{
+color:green;
+}
+.number{
+color:green;
+}
