@@ -1,4 +1,8 @@
 /* xTigerTrans widget : viewer.css */
+body {
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 12px;
+}
 
 #formular {
     margin: 0;
