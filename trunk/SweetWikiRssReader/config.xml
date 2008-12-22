@@ -1,0 +1,15 @@
+<widget xmlns="http://www.w3.org/TR/widgets/"
+	xmlns:palette="http://palette.ercim.org/ns/"
+	width="300"
+	height="200"
+	id="SweetWikiRss">
+    <title>SweetWiki RSS Feed Reader </title>
+	<author url="http://www-sop.inria.fr" email="Amira.Tifous@sophia.inria.fr">Amira Tifous</author>
+    <description> An RSS reader to read SweetWiki rss feeds exclusively, using XMLHttpRequest. </description>
+	<palette:widget_type>local</palette:widget_type>
+    <palette:preferences>
+    	<palette:preference name="display_title" datatype="string" default_value="true"/>
+        <palette:preference name="feed_url" display_name="RSS Url" datatype="string" default_value="http://sweetwiki.inria.fr/interop/files/rss/rss_Main_MainHome.xml"/>
+        <palette:preference name="items_quantity" display_name="Items by page" datatype="number" default_value="4"/>
+    </palette:preferences>
+</widget>
