@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+ This file is part of "SweetWiki RSS Reader widget".
+ Copyright (c) 2007-2008 INRIA and contributors (Amira Tifous).
+ All rights reserved.
+
+ "myWiWall" is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as published by
+ the Free Software Foundation.
+ 
+ "myWiWall" is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with "myWiWall"; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+<html>
+	<head>
+		<title>XHR RSS</title>
+		
+		<style type="text/css" media="screen">@import url(rss.css);</style>
+
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript">
+			// Main configuration
+			// TODO : Create a context object for this widget
+			window.feedUrl = '';
+			window.nbItemsDisplay = '';
+			 // Index of the current page in order to manage pagination			 
+			window.currentPage = 0;
+			window.feed = null;
+			window.nbrAllItems = null;
+			window.rssVersion = null;
+		
+			function onLoad() 
+			{
+				widget.addWidgetEventListener('http://www.tudor.lu/widget/event/showFeed',
+											  function(data){loadFeed(data.eventData.feedURI);},
+											  'hotFeeds');
+			
+				window.feedUrl = widget.preferenceForKey('feed_url');
+				window.nbItemsDisplay = parseInt(widget.preferenceForKey('items_quantity'));	// Quantity of items to display by screen view, considering the preferences set by the user.
+				
+				$('#loading').fadeIn('fast', function(){
+					loadFeed();
+				});
+			}
+			
+			function determineFeedVersion(xmlFeed)
+			{
+				// TODO Refine version detection
+				var foundVersion = '2.0';
+				// If an RDF node is found as the root node, we assume it is a 1.0 feed.
+				var rootRDFNode = getElementsByTagName('RDF', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf', xmlFeed);
+				
+				if (rootRDFNode.length == 1)
+					foundVersion = '1.0';
+				else
+					foundVersion = '2.0';
+					
+				window.rssVersion = foundVersion;
+			}
+			
+			function loadFeed(feedFromEvent)
+			{	
+				if (!feedFromEvent)
+					feedFromEvent = window.feedUrl;
+			
+				// I did that because I need to know the total numbers of items before executing anything. It's a pagination
+				// related issue.
+				widget.httpGet(feedFromEvent, 
+							   null, 
+							   function(data){
+							   		// Ok it's loaded we can pull out the loading screen
+							   		// and insert the needed elements.
+							   		$('#loading').remove();
+							   		
+							   		$('body').addClass('screen');
+							   		
+							   		// We display the title of the feed if specified in
+							   		// the xml configuration manifest.
+							   		if (widget.preferenceForKey('display_title') == 'true')
+							   			$('body').append('<h1 id="feed_title"></h1>');		
+							   							   		
+							   		$('body').append('<ul id="feed_entries"></ul>');
+							   		$('body').append('<div id="navbar"></div>');
+							   		
+									if (typeof data != 'object')
+									{
+								   		if (window.ActiveXObject)
+								   		// Code for IE, the real, the bad, the holly crap ...
+									    {
+									    	var doc = new ActiveXObject('Microsoft.XMLDOM');
+									    	doc.async = 'false';
+									    	doc.loadXML(data);
+									    }
+									    // code for Mozilla, Firefox, Opera, and cie ...
+									    else
+									    {
+									    	var parser = new DOMParser();
+									    	var doc = parser.parseFromString(data,"text/xml");
+									    }
+								   		
+								   		window.feed = doc.documentElement;
+							   		}
+							   		else
+							   		{
+							   			window.feed = data;
+							   		}
+							   		
+							   		determineFeedVersion(window.feed);
+							   		loadItems(false);
+							   		
+							   });
+			}
+			
+			// Function to simulate (unfortunately, not to replace) getElementsByTagNameNS
+			// This was done because Internet Explorer does not implement this really, really,
+			// really important method from DOM ...
+			function getElementsByTagName(tagName, ns, prefix, scope)
+			{
+				var elementListForReturn = scope.getElementsByTagName(prefix+':'+tagName);
+				if(elementListForReturn.length == 0){
+					elementListForReturn = scope.getElementsByTagName(tagName);
+					if(elementListForReturn.length == 0){
+						elementListForReturn = scope.getElementsByTagName('ns:'+tagName);
+						if(elementListForReturn.length == 0 && document.getElementsByTagNameNS){
+							elementListForReturn = scope.getElementsByTagNameNS(ns, tagName);
+						}
+					}
+				}     
+		 
+				return elementListForReturn;
+		    }
+		
+			function loadItems(kill)
+			{
+				var outSpeed = 'slow';	
+				if (!kill)
+					outSpeed = 100;	
+		
+				$('#feed_entries').fadeOut(outSpeed, function(){
+
+					$('#feed_entries > li').remove();			
+				
+					// Unfortunately, IE does not support element.getElementsByTagNameNS
+					//var channel = window.feed.getElementsByTagNameNS("http://purl.org/rss/1.0/", "channel")[0]; 
+					//var channelTitle = channel.getElementsByTagNameNS("http://purl.org/rss/1.0/", "title")[0];
+					
+					var channel = getElementsByTagName('channel', 'http://purl.org/rss/1.0/', 'rss', window.feed);
+					var channelTitle = getElementsByTagName('title', 'http://purl.org/rss/1.0/', 'rss', window.feed)[0];
+					
+					$('#feed_title').text(channelTitle.firstChild.nodeValue);
+					
+					// -- ici partie items rss:item
+					//items = window.feed.getElementsByTagNameNS("http://purl.org/rss/1.0/", "item");
+					items = getElementsByTagName('item', 'http://purl.org/rss/1.0/', 'rss', window.feed);
+					window.nbrAllItems = items.length;	
+					beginIndex = window.currentPage * window.nbItemsDisplay;
+					endIndex = (window.currentPage * window.nbItemsDisplay) + window.nbItemsDisplay;
+					
+					for ( i= beginIndex; i< endIndex; i++ ){
+					
+						if(i< window.nbrAllItems){ // Index of the current page in order to manage pagination.
+							var item = items[i];		
+							var li = document.createElement('li');
+							var a = document.createElement('a');
+							//var lienElem = item.getElementsByTagNameNS("http://purl.org/rss/1.0/", "link")[0];
+							//var itemTitle = item.getElementsByTagNameNS("http://purl.org/rss/1.0/", "title")[0];
+							
+							var lienElem = getElementsByTagName('link', 'http://purl.org/rss/1.0/', 'rss', item)[0];
+							var itemTitle = getElementsByTagName('title', 'http://purl.org/rss/1.0/', 'rss', item)[0];
+
+							//var tags = item.getElementsByTagNameNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "li");
+							var tags = getElementsByTagName('li', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf', item);
+							
+							var nbrTags = tags.length;
+							var ult = document.createElement('ul');
+							ult.setAttribute('id', 'tags');
+							
+							if (nbrTags > 0){							
+								$(ult).text('---- Tags : ');
+								var pos = window.feedUrl.indexOf('/files/',0);
+								wikiBase = window.feedUrl.substring(0,pos);
+								var tagLinkSearch = wikiBase + '/data/Tools/searchKeyword.jsp?keyword=';
+								
+								for ( j= 0; j< nbrTags; j++ ){
+									var tagLink = tagLinkSearch + tags[j].firstChild.nodeValue;
+									var tag = document.createElement('li');
+									tag.className = 'tag';
+									var atag = document.createElement('a');
+									atag.setAttribute('href', '#');
+									atag.setAttribute('onclick','javascript:window.open("'+tagLink+'","tag-search");');															
+									$(atag).text(tags[j].firstChild.nodeValue);
+									$(tag).append(atag);
+									$(ult).append(tag);									
+								}							
+							} else {
+								$(ult).text('No Tags');											
+							}				
+							
+							//--  Link creation.
+							// Developper's note : the target attribute is forbidden with XHTML strict. So we use the onclick
+							// attribute to set the target using the window.open function.						
+							$(a).text(itemTitle.firstChild.nodeValue);
+							a.setAttribute('href', '#');
+							a.setAttribute('onclick','javascript:window.open("'+lienElem.firstChild.nodeValue+'","wiki-page");');						
+							// List item creation.
+							$(li).append(a);
+							$(li).append(ult);
+							$('#feed_entries').append(li);
+						}
+						}
+	
+					    $('#feed_entries').fadeIn('normal');	
+	
+						// -- Navbar management.			
+						$('#navbar').contents().remove();
+						
+						// Do we have to display the 'previous' button ?
+						if ((window.nbItemsDisplay * window.currentPage) > 0)
+							$('#navbar').append('<a id="previous" href="#" onclick="previousItems();"><img src="previous.png"/></a>');
+						
+						// Do we have to display the 'next' button ?
+						if ((window.nbItemsDisplay * window.currentPage + window.nbItemsDisplay) < window.nbrAllItems)
+							$('#navbar').append('<a id="next" href="#" onclick="nextItems();"><img src="next.png"/></a>');
+						
+						
+						// We addjust the height of the widget, because the height of the item list is variable.
+						var container = $('.screen').get(0);
+						var bodyHeight = 0;
+						
+						if (window.getComputedStyle)
+						{
+							// We love Mozilla foundation.
+
+							bodyHeight = $(container).height();
+							widget.setHeight(bodyHeight);
+						}
+						else
+						{
+							widget.setHeight(30 * window.nbItemsDisplay + 90);
+						}
+						
+				});
+			}
+			
+			function nextItems()
+			{
+				window.currentPage += 1;
+				loadItems(true);
+			}
+			
+			function previousItems()
+			{
+				window.currentPage -= 1;
+				loadItems(true);
+			}	
+		</script>
+	</head>
+	
+	<body>
+		<div id="loading">
+			<span>Please wait while loading</span> <img alt="Loading" title="loading" src="loading.gif"/>
+		</div>
+	</body>
+</html>
