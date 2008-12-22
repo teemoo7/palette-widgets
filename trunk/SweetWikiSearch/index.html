@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+ This file is part of "SweetWiki (Tag-based) Search widget".
+ Copyright (c) 2007-2008 INRIA and contributors (Amira Tifous).
+ All rights reserved.
+
+ "myWiWall" is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as published by
+ the Free Software Foundation.
+ 
+ "myWiWall" is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with "myWiWall"; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+<html>
+	<head>
+		<title>SweetWiki Tag-based Search</title>
+		
+		<style type="text/css" media="screen">@import url(search.css);</style>
+
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript">
+			// Main configuration
+			// TODO : Create a context object for this widget
+			window.swUrl = '';
+			window.tags = '';
+			window.searchUrl = '';
+			window.results = null; 
+			
+			function onLoad() 
+			{
+				widget.addWidgetEventListener('http://www.tudor.lu/widget/event/searchEvent',
+											  function(data){getResults(data.eventData.searchURI);},
+											  'newSearch');
+											  
+				var url = widget.preferenceForKey('sw_url');
+				var position = url.indexOf('/data/',0);	
+					if (position!=-1) 
+						window.swUrl = url.substring(0,position);
+					else if (url.lastIndexOf('/')!= url.length-1)
+						window.swUrl = url;	
+						else window.swUrl = url.substring(0,url.length-1);
+				
+				$('#semSearch').fadeIn('normal');
+				
+			}
+				
+			function getResults(searchTags) 
+			{	
+				$('#results').remove();	
+				window.tags = jQuery.trim(searchTags);
+				// + ',';				
+				
+				var search = window.swUrl+'/data/Tools/searchKeyword.jsp';					 
+						
+				widget.httpGet(search,							
+								{ templateoff: true, keyword: window.tags }, 
+								function(data){													   		
+									$('body').append('<div id="results"><\/div>');
+									$('#results').append('<h1>SweetWiki results<\/h1>');									
+									$('#results').append('<ul id="results_entries" style=""></ul>');
+									
+									if (typeof data != 'object')
+									{
+								   		if (window.ActiveXObject)
+								   		// Code for IE, the real, the bad, the holly crap ...
+									    {
+									    	var doc = new ActiveXObject('Microsoft.XMLDOM');
+									    	doc.async = 'false';
+									    	doc.loadXML(data);
+									    }
+									    // code for Mozilla, Firefox, Opera, and cie ...
+									    else
+									    {
+									    	var parser = new DOMParser();
+									    	var doc = parser.parseFromString(data,"text/xml");
+									    }
+								   		
+								   		window.results = doc.documentElement;
+							   		}
+							   		else
+							   		{
+							   			window.results = data; 
+							   		}									
+				
+									loadResults(false);
+								 });
+				
+			}
+			
+			function loadResults(kill)
+			{
+				var outSpeed = 'slow';	
+				if (!kill)
+					outSpeed = 100;	
+		
+				$('#results').fadeOut(outSpeed, function(){						
+					var list = $(window.results).find("ul[class='resultpages']");
+						
+					list.each(function(i){				
+						var section = $(this).prev('h3').text();
+						var pages = $(this).find('li');
+						var h2 = document.createElement('h2');
+						var ul = document.createElement('ul');
+						$(h2).text(section);
+						$('#results_entries').append(h2);	
+						
+						pages.each(function(index){
+						var lis = document.createElement('li');
+						var a = document.createElement('a');
+						var pageTitle = $(this).text();
+						
+						var lienRel = $(this).find('a').attr('href');
+						var long = lienRel.length;
+						var pos = lienRel.indexOf('/data/',0);						
+						var relativLink = lienRel.substring(pos,long);						
+						var link = window.swUrl + relativLink;	
+											
+						$(a).text(pageTitle);
+						$(a).attr('href',  '#');
+						$(a).click(function (){
+							// We open the link in a new window.
+							window.open(link);
+							return false; // Event bubbling protection.
+						});
+							
+						$(lis).append(a);						
+						$(ul).append(lis);	
+											
+						});
+																
+						$('#results_entries').append(ul);
+					});				
+						
+					$('#results').fadeIn('normal');																		
+				});
+			}
+		</script>
+	</head>
+	
+	<body class="screen">		
+			<h1>Tag-based search</h1>
+			<div id="semSearch" style="display:inline">
+				<input type="text" name="tags" id="tag"/> 				
+				<input type="button" name="search" value="Search" onclick="getResults(document.getElementById('tag').value)"/>
+				<code><font color="red">Tags separated by commas</font></code>
+			</div>
+	</body>
+</html>

@@ -1,0 +1,14 @@
+<widget xmlns="http://www.w3.org/TR/widgets/"
+	xmlns:palette="http://palette.ercim.org/ns/"
+	width="300"
+	height="230"
+	id="SweetWikiSearch">
+    <title>SweetWiki Tag-based Search </title>
+	<author url="http://www-sop.inria.fr" email="Amira.Tifous@sophia.inria.fr">Amira Tifous</author>
+    <description> A widget for submitting tag-based queries to the instance of SweetWiki in "SweetWiki Url" field, and displaying the results. </description>
+	<palette:widget_type>local</palette:widget_type>
+    <palette:preferences>
+        <palette:preference name="sw_url" display_name="SweetWiki Url" datatype="string" default_value="http://sweetwiki.inria.fr/interop"/>
+    </palette:preferences>
+    <palette:scrollable>true</palette:scrollable>
+</widget>
