@@ -1,0 +1,83 @@
+body {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+	padding: 3px;
+}
+
+#translation {
+	background: #FFFFFFF;
+	border-bottom: 1px solid #CCCCCC;
+	padding-bottom: 5px;
+}
+
+form {
+	margin: 0px;
+	padding: 0px;
+}
+
+#translationSelection {
+	width: 100%;
+}
+
+#translationInput {
+	width: 100%;
+}
+
+.greyFonts {
+	color: #CCCCCC;
+}
+
+#results {
+	padding: 5px;
+	overflow: auto;
+}
+
+#DnDTip {
+	text-align: center;
+	margin-top: 10px;
+}
+
+.title {
+	font-weight: bold;
+	font-size: 10px;
+	color: #4685B1;
+}
+
+.description {
+	text-align: justify;
+	margin-left: 5px;
+	padding: 2px;
+}
+
+.link {
+	text-align: right;
+}
+
+form {
+	margin: 0px;
+	padding: 0px;
+}
+
+.bold {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.small {
+	font-size:10px;
+}	
+
+
+#indicator {
+	position: absolute;
+	left: 50%;
+	margin-left: -10px;
+	width: 20px;
+	top: 105px;
+	height: 20px;
+	text-align:center;
+}
+
+.clickable {
+	cursor: pointer;	
+}

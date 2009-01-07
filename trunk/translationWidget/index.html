@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Google Translation Widget</title>
+    <link rel="stylesheet" type="text/css" href="translationWidget.css" />
+	<script type="text/javascript" src="javascripts/jquery/jquery.js"></script>
+	<script type="text/javascript" src="javascripts/translation.js"></script>
+	<script type="text/javascript">
+	    function onLoad() {
+			translation.initialize();
+		}				
+	</script>
+  </head>
+
+  <body id="body">
+	<div id="translation">
+		<form action="" method="GET">
+			<table align="center" id="translationSelection">
+				<tbody>
+					<tr>
+						<td colspan="4">
+							<input type="text" name="translationInput" id="translationInput" value="Enter here the text to be translated." class="greyFonts" onfocus="this.value = ''; this.className=''"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<select name="sl" id="sl" class="languageSector" style="width: 100%;">
+								<option value="en" selected>English</option>
+								<option value="fr">French</option>
+								<option value="de">German</option>							
+								<option value="es">Spanish</option>
+							</select>
+						</td>
+						<td class="bold" align="center">
+							To 
+						</td>
+						<td>
+							<select name="tl" id="tl" class="languageSector" style="width: 100%;">
+								<option value="en">English</option>
+								<option value="fr" selected>French</option>							
+								<option value="de">German</option>							
+								<option value="es">Spanish</option>
+							</select>					
+						</td>
+						<td align="right">
+							<input type="submit" name="submit" value="Go" style="width: 80%;" onclick="if ($('#translationInput')[0].className != 'greyFonts') translation.displayTranslatedText($('#translationInput')[0].value); return false;"/>						
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+	</div>	
+	
+	<div id="results">		
+		<div id="DnDTip" class="greyFonts" style="display: block;">Drag and drop RSS Feed Items here to translate them.</div>
+	</div>
+
+	<div id="indicator" style="display: none;">
+		<img src="images/indicator.gif"/> 	
+	</div>
+  </body>
+</html>
