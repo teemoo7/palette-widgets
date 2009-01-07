@@ -1,0 +1,24 @@
+<widget xmlns="http://www.w3.org/TR/widgets/" xmlns:palette="http://palette.ercim.org/ns/"
+	width="300"
+	height="150"
+	id="translationWidget">
+	<title>Google Translation Widget</title>
+	<author url="http://docreuse.epfl.ch" email="micael.paquier@epfl.ch">Micael Paquier</author>
+	<description>Translates text or RSS feeds into other languages, given the Google Translation engine.</description>
+	<icon src="images/18.png"/>
+	<palette:widget_type>local</palette:widget_type>
+	<palette:preferences>
+		<palette:preference name="sourceLanguage"	display_name="Default source language"	datatype="enumeration" default_value="en">
+			<palette:enumeration value="en" display_value="English"/>
+			<palette:enumeration value="fr" display_value="French"/>
+			<palette:enumeration value="de" display_value="German"/>
+			<palette:enumeration value="es" display_value="Spanish"/>
+		</palette:preference>
+		<palette:preference name="targetLanguage"	display_name="Default traget language"	datatype="enumeration" default_value="fr">
+			<palette:enumeration value="fr" display_value="French"/>
+			<palette:enumeration value="en" display_value="English"/>
+			<palette:enumeration value="de" display_value="German"/>
+			<palette:enumeration value="es" display_value="Spanish"/>
+		</palette:preference>
+	</palette:preferences>
+</widget>
