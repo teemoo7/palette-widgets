@@ -213,6 +213,13 @@
 						titleText = title.firstChild.nodeValue;
 						titleText = titleText.replace('<![CDATA[', '');
 						titleText = titleText.replace(']]>', '');
+
+						// ADDED BY MICAEL PAQUIER //
+						// Description
+						var description = $(this).find('description').get(0);
+						descriptionText = description.firstChild.nodeValue;
+						descriptionText = descriptionText.replace('<![CDATA[', '');
+						descriptionText = descriptionText.replace(']]>', '');
 						
 						$(a).append(titleText);
 						$(a).attr('href', linkValue);
@@ -220,6 +227,18 @@
 						$(a).click(function() {
 							setTimeout(updateTitle, 10000);
 						});
+						
+						// ADDED BY MICAEL PAQUIER //
+						/* Add Drag and Drop information */
+						if (widget.addDragData) {
+							var fileType = 'http://palette.ercim.org/ns/dnd/rss-feed';
+							widget.addDragData (
+								a, 
+								fileType, 
+								{"title": titleText, "link": linkValue, "description": descriptionText}, 
+								"Translate article"
+							);
+						}
 						
 						// List item creation.
 						$(li).append(a);
