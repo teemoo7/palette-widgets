@@ -20,7 +20,10 @@
 			this.resultsArray = new Array();
 			this.lastQuery = 0;
 			this.repository = widget.preferenceForKey('repository');
-			this.repositoryUrl = widget.preferenceForKey('repositoryurl') || 'http://paletterep.cti.gr/';
+			this.repositoryUrl = widget.preferenceForKey('repositoryurl');
+			if (this.repository == "CoRep") {
+				this.repositoryUrl = 'http://paletterep.cti.gr/';
+			}
 			this.queryServer();
 			$('#filename').focus();
 		}, 
