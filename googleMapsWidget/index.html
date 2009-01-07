@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Google Maps Widget</title>
+    <link rel="stylesheet" type="text/css" href="googleMapsWidget.css" />
+	<script type="text/javascript" src="javascript/jquery/jquery.js"></script>
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAV3kwqaJLiyNjgbuoVnTQGRT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRE3E-6JgPrTiJGrWmYDV2q9x9kjw" type="text/javascript"></script>
+	<script type="text/javascript">
+		var geocoder;
+		var map; 
+		var queryId = 0;
+
+	    function onLoad() {
+			//map.initialize();
+			// KEY : ABQIAAAAV3kwqaJLiyNjgbuoVnTQGRT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRE3E-6JgPrTiJGrWmYDV2q9x9kjw
+			// Site: http://localhost/
+			
+			if (GBrowserIsCompatible()) {
+				geocoder = new GClientGeocoder();
+		        map = new GMap2(document.getElementById("map_display"));
+		        //map.setCenter(new GLatLng(37.4419, -122.1419), 13);
+				map.enableScrollWheelZoom();
+				showAddress(widget.preferenceForKey('startlocation'));
+			}			
+		}
+		
+		function goToLocation() {
+			showAddress(document.getElementById("location").value);
+		}
+		
+		function showAddress(address) {
+			if (geocoder && map) {
+				var pointerNumber = queryId;
+				geocoder.getLatLng(
+					address,
+					function(point) {
+						if (!point) {
+							alert(address + " not found");
+						} else {
+							map.setCenter(point, 13);
+							var marker = new GMarker(point);
+							map.addOverlay(marker);
+							//marker.openInfoWindowHtml("Drag and Drop this map to a weather widget to know the forecast of this location!");
+							/* Add Drag and Drop information */
+							if (widget.addDragData) {
+								var fileType = 'http://palette.ercim.org/ns/dnd/string';
+								var pointer = document.getElementById("mtgt_unnamed_"+pointerNumber);
+								pointer.setAttribute("title", "Drag and Drop this pointer to a weather widget to know the forecast of this location!");
+								widget.addDragData (
+									pointer, 
+									fileType, 
+									address, 
+									address
+								);
+							}							
+						}
+					}
+				);
+				queryId++;
+			}
+		}		
+	</script>
+  </head>
+
+  <body id="body" onunload="GUnload();">
+	<div id="searchBar">
+		<table align="center">
+			<tbody>
+				<tr>
+					<td width="20">
+						<img src="images/7.png"/> 
+					</td>
+					<td class="bold" width="55">
+						Search 
+					</td>
+					<td>
+						<form action="" onsubmit="goToLocation(); return false;">
+							<input type="text" id="location" name="location"/>
+							<input type="submit" id="submit_query" name="submit_query" value="OK"/>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>	
+	<div id="map_display"></div>
+
+	<div id="indicator" style="display: none;">
+		<img src="images/indicator.gif"/> 	
+	</div>
+  </body>
+</html>

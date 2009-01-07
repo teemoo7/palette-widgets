@@ -1,0 +1,50 @@
+body {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+	padding: 3px;
+}
+
+#searchBar {
+	font-size: 10px;
+	position:relative;
+	background: url(images/gradient51.png) repeat-x;
+	border: 1px solid #000000;
+	-moz-border-radius-topleft: 7px;
+	-moz-border-radius-topright: 7px;
+	-moz-border-radius-bottomleft: 7px;
+	-moz-border-radius-bottomright: 7px;
+	min-height:30px;
+}
+
+#map_display {
+	height: 240px;
+	margin-top: 10px;
+	border: 1px solid #CCCCCC;
+}
+
+form {
+	margin: 0px;
+	padding: 0px;
+}
+
+.bold {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.small {
+	font-size:10px;
+}	
+
+
+#indicator {
+	margin: auto;
+	width: 20px;
+	height: 20px;
+	text-align:center;
+	margin-top: 40px;
+}
+
+.clickable {
+	cursor: pointer;	
+}

@@ -1,0 +1,13 @@
+<widget xmlns="http://www.w3.org/TR/widgets/" xmlns:palette="http://palette.ercim.org/ns/"
+	width="300"
+	height="300"
+	id="googleMapsWidget">
+	<title>Google Maps Widget</title>
+	<author url="http://docreuse.epfl.ch" email="micael.paquier@epfl.ch">Micael Paquier</author>
+	<description>Display maps given location and allows exportation through Drag and Drop to Weather widget</description>
+	<icon src="images/7.png"/>
+	<palette:widget_type>local</palette:widget_type>
+	<palette:preferences>
+		<palette:preference name="startlocation"	display_name="City start location"	datatype="string" default_value="Lausanne"/>
+	</palette:preferences>
+</widget>
