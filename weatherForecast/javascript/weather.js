@@ -1,7 +1,7 @@
 	var weather = {	
 		initialize: function() {
-			this.indicator = $('#indicator');
-			this.indicator.show();
+			document.getElementById('indicator').setAttribute("style", "display: block");
+			document.getElementById('weather').setAttribute("style", "display: none");
 			this.pics = {
 				'clear sky': 0,
 				'sunny': 1, 
@@ -19,6 +19,7 @@
 				'sleet showers': 17,
 				'sleet': 18,
 				'hail showers': 20,
+				'light snow showers': 23,
 				'light snow': 24,
 				'heavy snow': 27,
 				'thundery showers night': 28,
@@ -33,6 +34,7 @@
 			} else {				
 				this.getLocationIdAndQuery();
 			}
+			this.setDragAndDrop();
 		}, 
 		
 		/* http://www.bbc.co.uk/cgi-perl/weather/search/new_search.pl?search_query=geneva */
@@ -54,6 +56,8 @@
 		
 		/* Get the location ID in function of the city name */
 		getLocationIdAndQuery: function() {
+			document.getElementById('indicator').setAttribute("style", "display: block");
+			document.getElementById('weather').setAttribute("style", "display: none");		
 			var query = 'http://www.bbc.co.uk/cgi-perl/weather/search/new_search.pl?search_query='+encodeURI(this.location);
 			var that = this;
 			var locationId = '4537';  /* Not found => Lausanne */
@@ -92,6 +96,7 @@
 			var that = this;
 			var ajax = widget.httpGet(query, null,
 				function(data){
+					that.clearWidget();
 					$('#location').append(document.createTextNode(that.location));
 					var i = 0;
 					$(data).find('item').each(function() {
@@ -132,8 +137,45 @@
 						$('#day'+i+'_min_temp').append(document.createTextNode(minTemp));
 						i++;
 					});
-					that.indicator.hide();
+					document.getElementById('indicator').setAttribute("style", "display: none");
+					document.getElementById('weather').setAttribute("style", "display: block");
 				}
 			);							
+		}, 
+		
+		/* Enable the drag and drop functionalities */
+		setDragAndDrop: function() {
+			var that = this;
+			widget.addWidgetEventListener('http://palette.ercim.org/ns/dnd/string', 
+				function(event) {
+					var data = event.eventData;	
+					if (typeof data == 'string') {
+						that.location = data;
+						that.getLocationIdAndQuery();
+					}
+				}, null);		
+			if (widget.bindWidgetToDropType) {
+				widget.bindWidgetToDropType ('http://palette.ercim.org/ns/dnd/string');
+			}		
+		},
+		
+		/* Reset the widget display */
+		clearWidget: function() {
+			this.clearElement($('#location')[0]);
+			for (var i=0; i<3; i++) {
+				this.clearElement($('#day'+i+'_main')[0]);
+				this.clearElement($('#day'+i+'_info')[0]);
+				this.clearElement($('#day'+i+'_max_temp')[0]);
+				this.clearElement($('#day'+i+'_min_temp')[0]);
+			}
+		},
+		
+		/* Clear a given element */
+		clearElement: function(element) {
+			if (element) {
+				while (element.hasChildNodes()) {
+					element.removeChild(element.firstChild);
+				}
+			}
 		}
 	}
