@@ -59,7 +59,6 @@
 					/* Common Repository */
 					/* Buil the query given the preferences */
 					this.query = this.repositoryUrl+'?q=and%20filename='+encodeURI(this.keyword);
-					console.log("CoRep: "+this.query);					
 					var myLastQuery = this.lastQuery;
 					var that = this;
 					var ajax = widget.httpGet(this.query, null,
@@ -98,7 +97,6 @@
 					/* Other server */
 					/* Buil the query given the preferences */
 					this.query = this.repositoryUrl;
-					console.log("Other: "+this.query);					
 					var myLastQuery = this.lastQuery;
 					var that = this;
 					var ajax = widget.httpGet(this.query, null,
@@ -244,5 +242,14 @@
 		/* Highlight some keyword in a text */
 		highlightText: function(text) {
 			return text.replace(this.keywordRegExp, "<b>$1</b>");			
+		},
+		
+		/* Display a message */
+		displayMessage: function(message) {
+			if (console && console.log) {
+				console.log(message);
+			} else {
+				alert(message);
+			}
 		}
 	}
