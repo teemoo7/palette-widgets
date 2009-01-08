@@ -125,6 +125,15 @@
 		
 		/* Display the error detail when query fails */
 		queryError: function(xhrObject, status, errorThrown) {
-			console.log("ERROR >> "+status+" >> "+errorThrown);
+			docReuseWidget.displayMessage("ERROR >> "+status+" >> "+errorThrown);
+		}, 
+		
+		/* Display a message */
+		displayMessage: function(message) {
+			if (console && console.log) {
+				console.log(message);
+			} else {
+				alert(message);
+			}
 		}
 	}
