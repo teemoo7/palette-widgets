@@ -1,0 +1,87 @@
+body {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+}
+
+#location {
+	font-size: 16px;
+	font-weight: bold;
+	color: #6699CC;
+	margin-bottom: 5px;
+}
+
+#search {
+	padding: 10px;
+	margin: 5px;
+	font-size: 12px;
+	text-align: center;
+	border-bottom: 1px solid #CCCCCC;
+}
+
+#locationInput {
+	margin: 5px;	
+}
+
+#results {
+	margin: 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: center;
+}
+
+#webcams {
+	margin: 5px;
+	padding: 2px;
+	overflow: auto;
+	height: 130px;
+	white-space: nowrap; 
+	border: 1px solid #CCCCCC;
+	text-align: center;
+}
+
+#photo {
+	text-align: center;
+}
+
+.thumbnail {
+	border: 1px solid #CCCCCC;
+	padding: 2px;
+	margin: 5px;
+	-moz-border-radius-bottomleft: 2px;
+	-moz-border-radius-bottomright: 2px;
+	-moz-border-radius-topleft: 2px;
+	-moz-border-radius-topright: 2px;
+}
+
+.bold {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.small {
+	font-size:10px;
+}	
+
+.greyFonts {
+	color: #CCCCCC;
+}
+
+form {
+	margin: 0px;
+	padding: 0px;
+}
+
+#indicator {
+	width: 20px;
+	height: 20px;
+	text-align:center;
+	position: absolute;
+	top: 50%;
+	left: 50%;	
+	margin-top: -10px;
+	margin-left: -10px;
+}
+
+.clickable {
+	cursor: pointer;	
+}
