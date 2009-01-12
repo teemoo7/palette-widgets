@@ -9,5 +9,9 @@
 	<palette:widget_type>local</palette:widget_type>
 	<palette:preferences>
 		<palette:preference name="startlocation"	display_name="City start location"	datatype="string" default_value="Lausanne"/>
+		<palette:preference name="synchronizeWidgets" display_name="Synchronize with other widgets" datatype="enumeration" default_value="yes">
+			<palette:enumeration value="yes" display_value="Yes"/>
+			<palette:enumeration value="no" display_value="No"/>
+		</palette:preference>				
 	</palette:preferences>
 </widget>
