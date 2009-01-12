@@ -39,11 +39,16 @@
 						} else {
 							map.setCenter(point, 13);
 							var marker = new GMarker(point);
-							map.addOverlay(marker);
-							//marker.openInfoWindowHtml("Drag and Drop this map to a weather widget to know the forecast of this location!");
+							map.addOverlay(marker);							
+							var fileType = 'http://palette.ercim.org/ns/dnd/string';
+							/* Fire event */
+							if (widget.preferenceForKey('synchronizeWidgets') == 'yes') {
+								if (widget.fireWidgetEvent) {
+									widget.fireWidgetEvent(null, fileType, address);
+								}
+							}
 							/* Add Drag and Drop information */
 							if (widget.addDragData) {
-								var fileType = 'http://palette.ercim.org/ns/dnd/string';
 								var pointer = document.getElementById("mtgt_unnamed_"+pointerNumber);
 								pointer.setAttribute("title", "Drag and Drop this pointer to a weather widget to know the forecast of this location!");
 								widget.addDragData (
@@ -74,7 +79,7 @@
 						Search 
 					</td>
 					<td>
-						<form action="" onsubmit="goToLocation(); return false;">
+						<form action="" name="mapForm" onsubmit="goToLocation(); return false;">
 							<input type="text" id="location" name="location"/>
 							<input type="submit" id="submit_query" name="submit_query" value="OK"/>
 						</form>
