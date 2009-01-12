@@ -1,0 +1,13 @@
+<widget xmlns="http://www.w3.org/TR/widgets/" xmlns:palette="http://palette.ercim.org/ns/"
+	width="300"
+	height="255"
+	id="webcamsTravel">
+	<title>Webcams.travel</title>
+	<author url="http://docreuse.epfl.ch" email="micael.paquier@epfl.ch">Micael Paquier</author>
+	<description>Webcams all around the world.</description>
+	<icon src="images/webcamsTravel.png"/>
+	<palette:widget_type>local</palette:widget_type>
+	<palette:preferences>
+		<palette:preference name="location"	display_name="Location"	datatype="string" default_value="Lausanne"/>
+	</palette:preferences>
+</widget>

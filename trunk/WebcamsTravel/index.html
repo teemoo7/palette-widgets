@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Webcam.travel</title>
+    <link rel="stylesheet" type="text/css" href="webcamsTravel.css" />
+	<script type="text/javascript" src="javascript/jquery/jquery.js"></script>
+    <script type="text/javascript" src="javascript/webcams.js"></script>
+	<script type="text/javascript">
+	    function onLoad() {
+			webcams.initialize();
+		}
+	</script>
+  </head>
+
+  <body id="body">
+	<div id="webcam">
+		<div id="infos" style="display: block;">
+			<div id="search">
+				<form name="webcamForm" action="" method="post" onsubmit="webcams.getWebcamsForCity($('#locationInput')[0].value); return false;">
+					Get webcams for
+					<input type="text" name="locationInput" id="locationInput" size="20" value="Enter here a city." class="greyFonts" onfocus="this.value = ''; this.className=''"/>
+					<input type="submit" name="submit" value="Go"/>
+				</form>
+			</div>
+			<div id="results">
+			</div>
+			<div id="webcams"></div>
+		</div>
+		<div id="photo" style="display: none;"></div>
+	</div>	
+	<div id="indicator" style="display: none;">
+		<img src="images/indicator.gif"/> 	
+	</div>
+  </body>
+</html>
