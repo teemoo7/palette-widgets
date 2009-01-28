@@ -25,7 +25,9 @@ Contributors:
 	var TRANSFOS_URL_KEY = 'transfosURL'; // preference key
 			
 	function log(msg) {
-		window.console.log ('TPLV >> ' + msg);
+		if (window.console) { 
+			window.console.log ('TPLV >> ' + msg);
+		}
 	}  
 	
 	function error(msg) {
