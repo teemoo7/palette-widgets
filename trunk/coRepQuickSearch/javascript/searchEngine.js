@@ -58,7 +58,8 @@
 				case "CoRep": 
 					/* Common Repository */
 					/* Buil the query given the preferences */
-					this.query = this.repositoryUrl+'?q=and%20filename='+encodeURI(this.keyword);
+					//this.query = this.repositoryUrl+'?q=and%20filename='+encodeURI(this.keyword); // DEPRECATED since version 2.0 of myWiWall.
+					this.query = this.repositoryUrl+'?q='+encodeURIComponent('and filename=')+encodeURI(this.keyword);					
 					var myLastQuery = this.lastQuery;
 					var that = this;
 					var ajax = widget.httpGet(this.query, null,
