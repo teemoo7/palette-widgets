@@ -4,24 +4,35 @@
     <title>Google Maps Widget</title>
     <link rel="stylesheet" type="text/css" href="googleMapsWidget.css" />
 	<script type="text/javascript" src="javascript/jquery/jquery.js"></script>
-	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAV3kwqaJLiyNjgbuoVnTQGRT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRE3E-6JgPrTiJGrWmYDV2q9x9kjw" type="text/javascript"></script>
 	<script type="text/javascript">
+		function $import(filename) {
+			var script = document.createElement('script');
+			script.setAttribute("type", "text/javascript");
+			script.setAttribute("src", filename);
+			document.getElementsByTagName("head")[0].appendChild(script);  
+		}	
+	
 		var geocoder;
 		var map; 
 		var queryId = 0;
 
 	    function onLoad() {
-			//map.initialize();
 			// KEY : ABQIAAAAV3kwqaJLiyNjgbuoVnTQGRT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRE3E-6JgPrTiJGrWmYDV2q9x9kjw
 			// Site: http://localhost/
 			
+			// Import javascripts of Google Maps given the developer key - see http://code.google.com/intl/fr/apis/maps/index.html
+			var key = widget.preferenceForKey('googleMapsDeveloperKey');
+			$import("http://maps.google.com/maps?file=api&v=2.x&key="+key+"&async=2&callback=initWidgetMap");
+		}
+		
+		function initWidgetMap() {
 			if (GBrowserIsCompatible()) {
 				geocoder = new GClientGeocoder();
 		        map = new GMap2(document.getElementById("map_display"));
 		        //map.setCenter(new GLatLng(37.4419, -122.1419), 13);
 				map.enableScrollWheelZoom();
 				showAddress(widget.preferenceForKey('startlocation'));
-			}			
+			}					
 		}
 		
 		function goToLocation() {

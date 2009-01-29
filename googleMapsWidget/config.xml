@@ -12,6 +12,7 @@
 		<palette:preference name="synchronizeWidgets" display_name="Synchronize with other widgets" datatype="enumeration" default_value="yes">
 			<palette:enumeration value="yes" display_value="Yes"/>
 			<palette:enumeration value="no" display_value="No"/>
-		</palette:preference>				
+		</palette:preference>	
+		<palette:preference name="googleMapsDeveloperKey" datatype="hidden" default_value="ABQIAAAAV3kwqaJLiyNjgbuoVnTQGRTuyIIaH5oC74pU0qLBWWcrVsv9LhS-4Rda5sCkZztxVO4txuQAWHep-Q"/> 		
 	</palette:preferences>
 </widget>
